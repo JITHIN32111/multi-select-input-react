@@ -1,12 +1,19 @@
 import React, { useEffect, useState } from "react";
 
 function App() {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState('')
   const [suggestions, setSuggestions] = useState([]);
-  const [suggestionList, setSuggestionList] = useState([]);
+  const [selectedUsers, setSelectedUsers] = useState([]);
 
-  
+  const [selectedUsersSet, setSelectedUsersSet] = useState(new Set())
+console.log(selectedUsers);
+const addSuggestion=(user)=>{
+setSelectedUsers([...selectedUsers,user])
+setSelectedUsersSet(new Set([...selectedUsersSet,user.email]))
+setSearchTerm('')
+setSuggestions([])
 
+}
   useEffect(()=>{
     const fetchUsers = async() => {
       if (searchTerm.trim() === "") {
@@ -23,17 +30,21 @@ function App() {
   return (
     <div className="flex flex-col relative mt-5 px-6">
       <div className="w-full flex flex-wrap border-2 items-center p-3 rounded-full">
+        <Pill/>
         <input
           type="text"
           className="h-8 outline-none"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <ul className="max-h-[300px] overflow-y-scroll  p-0 mt-14 top-0  absolute  border-1">{suggestions?.users?.map((user,index)=>{
-          return <li className="flex border  flex-row items-center gap-6 cursor-pointer " key={user.email}>
+        <ul className="max-h-[300px] overflow-y-scroll  p-0 mt-14 top-0  absolute  border-1">
+          {suggestions?.users?.map((user,index)=>{
+          return !selectedUsersSet.has(user.email)?(
+            <li onClick={()=>addSuggestion(user)} className="flex border  flex-row items-center gap-6 cursor-pointer " key={user.email}>
             <img className="h-[20px]" src={user.image} alt="" />
             <span>{user.firstName}{user.lastName}</span>
           </li>
+          ):<></>
         })}</ul>
       </div>
     </div>
